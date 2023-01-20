@@ -69,6 +69,36 @@ export async function appRoutes(app: FastifyInstance) {
     };
   });
 
+  app.get("/summary", async (request) => {
+    // FYI: I'll use a SQL Raw query in order to achieve this summary
+    // meaning that the Prisma BD compatibility maybe won't work for this endpoint
+    // in case we use something different than SQLite
+    const summary = await prisma.$queryRaw`
+      SELECT
+        D.id,
+        D.date,
+        (
+          SELECT
+            cast(count(*) AS FLOAT)
+          FROM day_habits DH
+          WHERE DH.day_id = D.id
+        ) AS completed,
+        (
+          SELECT
+            cast(count(*) AS FLOAT)
+          FROM habit_week_days HWD
+          JOIN habits H
+            ON H.id = HWD.habit_id
+          WHERE
+            HWD.week_day = cast(strftime('%w', D.date/1000.0, 'unixepoch') AS INT)
+            AND H.created_at <= D.date
+        ) AS amount
+      FROM days D
+    `;
+
+    return summary;
+  });
+
   app.patch("/habits/toggle/:id", async (request) => {
     const toggleHabitParams = z.object({
       id: z.string().uuid(),
