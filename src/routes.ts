@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { z } from "zod";
+import { date, z } from "zod";
 import { getDay, getStartOfTodaysDate } from "./lib/date";
 
 import { prisma } from "./lib/prisma";
@@ -35,9 +35,10 @@ export async function appRoutes(app: FastifyInstance) {
   app.get("/day", async (request) => {
     const getDayParams = z.object({
       date: z.coerce.date(),
+      userId: z.string(),
     });
 
-    const { date } = getDayParams.parse(request.query);
+    const { date, userId } = getDayParams.parse(request.query);
 
     const weekDay = getDay(date);
 
@@ -46,6 +47,7 @@ export async function appRoutes(app: FastifyInstance) {
         created_at: {
           lte: date,
         },
+        user_id: userId,
         weekDays: {
           some: {
             week_day: weekDay,
@@ -56,7 +58,10 @@ export async function appRoutes(app: FastifyInstance) {
 
     const day = await prisma.day.findUnique({
       where: {
-        date,
+        date_user_id: {
+          date: date,
+          user_id: userId,
+        },
       },
       include: {
         dayHabits: true,
@@ -72,6 +77,12 @@ export async function appRoutes(app: FastifyInstance) {
   });
 
   app.get("/summary", async (request) => {
+    const summaryParams = z.object({
+      userId: z.string(),
+    });
+
+    const { userId } = summaryParams.parse(request.query);
+
     // FYI: I'll use a SQL Raw query in order to achieve this summary
     // meaning that the Prisma BD compatibility maybe won't work for this endpoint
     // in case we use something different than SQLite
@@ -96,23 +107,28 @@ export async function appRoutes(app: FastifyInstance) {
             AND H.created_at <= D.date
         ) AS amount
       FROM days D
+      WHERE D.user_id = ${userId}
     `;
 
     return summary;
   });
 
-  app.patch("/habits/toggle/:id", async (request) => {
+  app.patch("/habits/toggle/:id/:userId", async (request) => {
     const toggleHabitParams = z.object({
       id: z.string().uuid(),
+      userId: z.string(),
     });
 
-    const { id } = toggleHabitParams.parse(request.params);
+    const { id, userId } = toggleHabitParams.parse(request.params);
 
     const today = getStartOfTodaysDate();
 
     let day = await prisma.day.findUnique({
       where: {
-        date: today,
+        date_user_id: {
+          date: today,
+          user_id: userId,
+        },
       },
     });
 
@@ -120,6 +136,7 @@ export async function appRoutes(app: FastifyInstance) {
       day = await prisma.day.create({
         data: {
           date: today,
+          user_id: userId,
         },
       });
     }
