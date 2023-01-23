@@ -74,6 +74,7 @@ async function run() {
       data: {
         /** Monday */
         date: new Date("2023-01-02T00:00:00.000z"),
+        user_id: userId,
         dayHabits: {
           create: {
             habit_id: firstHabitId,
@@ -89,6 +90,7 @@ async function run() {
       data: {
         /** Friday */
         date: new Date("2023-01-06T00:00:00.000z"),
+        user_id: userId,
         dayHabits: {
           create: {
             habit_id: secondHabitId,
@@ -104,6 +106,7 @@ async function run() {
       data: {
         /** Wednesday */
         date: new Date("2023-01-04T00:00:00.000z"),
+        user_id: userId,
         dayHabits: {
           create: [{ habit_id: firstHabitId }, { habit_id: secondHabitId }],
         },

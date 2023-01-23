@@ -9,6 +9,7 @@ CREATE TABLE "habits" (
 -- CreateTable
 CREATE TABLE "days" (
     "id" TEXT NOT NULL PRIMARY KEY,
+    "user_id" TEXT NOT NULL,
     "date" DATETIME NOT NULL
 );
 
