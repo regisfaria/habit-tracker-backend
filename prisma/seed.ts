@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const userId = "1c9770b7-dbbe-4e4d-af3e-5935872957e5";
+
 const firstHabitId = "0730ffac-d039-4194-9571-01aa2aa0efbd";
 const firstHabitCreationDate = new Date("2022-12-31T00:00:00.000");
 
@@ -24,6 +26,7 @@ async function run() {
     prisma.habit.create({
       data: {
         id: firstHabitId,
+        user_id: userId,
         title: "Exercise at least 1h",
         created_at: firstHabitCreationDate,
         weekDays: {
@@ -35,6 +38,7 @@ async function run() {
     prisma.habit.create({
       data: {
         id: secondHabitId,
+        user_id: userId,
         title: "Study something new for 1h",
         created_at: secondHabitCreationDate,
         weekDays: {
@@ -46,6 +50,7 @@ async function run() {
     prisma.habit.create({
       data: {
         id: thirdHabitId,
+        user_id: userId,
         title: "Sleep 8h",
         created_at: thirdHabitCreationDate,
         weekDays: {

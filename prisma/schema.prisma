@@ -12,6 +12,7 @@ datasource db {
 
 model Habit {
   id         String   @id @default(uuid())
+  user_id    String
   title      String
   created_at DateTime
 
