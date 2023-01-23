@@ -31,7 +31,7 @@ CREATE TABLE "habit_week_days" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "days_date_key" ON "days"("date");
+CREATE UNIQUE INDEX "days_date_user_id_key" ON "days"("date", "user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "day_habits_day_id_habit_id_key" ON "day_habits"("day_id", "habit_id");
