@@ -31,7 +31,5 @@ export async function habitRoutes(app: FastifyInstance) {
     const { id, userId } = toggleHabitParams.parse(request.params);
 
     await toggleDayHabit(id, userId);
-
-    return response.code(204);
   });
 }
